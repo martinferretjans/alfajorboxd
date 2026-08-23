@@ -4,7 +4,7 @@ Aplicación web para registrar y calificar alfajores.
 
 ## Requisitos
 
-- Go 1.26.5 o superior
+- Go instalado (1.25 o superior)
 
 ## Cómo ejecutar
 
