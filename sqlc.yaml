@@ -8,4 +8,4 @@ sql:
       go:
         package: "db"
         out: "db"
-        sql_package: "database/sql"
+        sql_package: "database/sql"	
