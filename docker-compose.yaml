@@ -10,6 +10,22 @@ services:
     volumes:
       - ./db/schema:/docker-entrypoint-initdb.d:ro
       - postgres_data:/var/lib/postgresql/data
-      
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d alfajorboxd"]
+      interval: 2s
+      timeout: 5s
+      retries: 15
+      start_period: 5s
+
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db:5432/alfajorboxd?sslmode=disable
+
 volumes:
   postgres_data:
