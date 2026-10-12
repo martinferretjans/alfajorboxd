@@ -7,6 +7,7 @@ import(
 	"log"
 	"net/http"
 	"database/sql"
+	"alfajorboxd/handlers"
 	db "alfajorboxd/db/sqlc"
 	_ "github.com/lib/pq"
 )
@@ -24,6 +25,10 @@ func main(){
 	
 	queries := db.New(conn)
 	
+	h := handlers.New(queries)
+	
+	
+	
 	//Prueba de conexion a la base
 	alfajores, err := queries.ListAlfajores(context.Background())
 	if err != nil{
@@ -32,6 +37,10 @@ func main(){
 	fmt.Printf("Alfajores encontrados: %d\n", len(alfajores))
 
 	//Server http
+	
+	http.HandleFunc("/alfajores", h.AlfajoresHandler)
+	http.HandleFunc("/alfajores/", h.AlfajorHandler)
+	
 	staticDir := "./static"
 	fileServer := http.FileServer(http.Dir(staticDir))
 	http.Handle("/", fileServer)
