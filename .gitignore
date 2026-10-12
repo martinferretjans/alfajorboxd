@@ -1,0 +1,3 @@
+/db/sqlc/db.go
+/db/sqlc/models.go
+/db/sqlc/queries.sql.go
