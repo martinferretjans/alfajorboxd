@@ -2,7 +2,7 @@ SHELL := /bin/bash
 .ONESHELL:
 .DEFAULT_GOAL := test
 
-.PHONY: test clean
+.PHONY: test clean run stop
 
 test:
 	@set -e
@@ -17,3 +17,9 @@ test:
 
 clean:
 	docker compose down -v
+	
+run:
+	docker compose up --build app
+
+stop:
+	docker compose down

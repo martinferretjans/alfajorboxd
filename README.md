@@ -10,7 +10,7 @@ Aplicación web para registrar y calificar alfajores.
 ## Cómo ejecutar
 
 ```bash
-git clone -b tp2 https://github.com/martinferretjans/alfajorboxd.git
+git clone -b tp3 https://github.com/martinferretjans/alfajorboxd.git
 cd alfajorboxd
 make test
 ```
