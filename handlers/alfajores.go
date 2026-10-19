@@ -37,12 +37,27 @@ func nullString(s *string) sql.NullString {
     }
 }
 
-func alfajorValido(a AlfajorInput) bool {
-    return strings.TrimSpace(a.Name) != "" &&
-        strings.TrimSpace(a.Relleno) != "" &&
-        strings.TrimSpace(a.Marca) != "" &&
-        a.Precio > 0 &&
-        (a.Tapas == 2 || a.Tapas == 3)
+func validarAlfajor(a AlfajorInput, validarID bool) error {
+    if validarID && strings.TrimSpace(a.ID) == "" {
+        return errors.New("el id es obligatorio")
+    }
+    if strings.TrimSpace(a.Name) == "" {
+        return errors.New("el nombre no puede estar vacio")
+    }
+    if strings.TrimSpace(a.Relleno) == "" {
+        return errors.New("el relleno no puede estar vacio")
+    }
+    if strings.TrimSpace(a.Marca) == "" {
+        return errors.New("la marca no puede estar vacia")
+    }
+    if a.Precio <= 0 {
+        return errors.New("el precio debe ser mayor a 0")
+    }
+    if a.Tapas != 2 && a.Tapas != 3 {
+        return errors.New("la cantidad de tapas debe ser 2 o 3")
+    }
+
+    return nil
 }
 
 func New(queries *db.Queries) *Handler {
@@ -136,9 +151,9 @@ func (h *Handler) createAlfajor(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    if strings.TrimSpace(datos.ID) == "" || !alfajorValido(datos) {
-        http.Error(w, "Datos invalidos", http.StatusBadRequest)
-        return
+    if err := validarAlfajor(datos, true); err != nil {
+    http.Error(w, err.Error(), http.StatusBadRequest)
+    return
     }
 
     // Crear alfajor en la base
@@ -173,9 +188,9 @@ func (h *Handler) updateAlfajor(w http.ResponseWriter, r *http.Request, id strin
         return
     }
 
-    if !alfajorValido(datos) {
-        http.Error(w, "Datos invalidos", http.StatusBadRequest)
-        return
+    if err := validarAlfajor(datos, false); err != nil {
+    	http.Error(w, err.Error(), http.StatusBadRequest)
+    	return
     }
 
     alfajor, err := h.queries.UpdateAlfajor(r.Context(), db.UpdateAlfajorParams{
