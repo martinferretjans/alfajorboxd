@@ -80,6 +80,22 @@ verificar 200 "PUT actualizar alfajor" \
         "descripcion": "Actualizado"
     }'
 
+# Verificar que los cambios se guardaron
+verificar 200 "GET verificar actualizacion" \
+    "$BASE_URL/alfajores/guaymallen-blanco"
+
+if ! grep -q '"Precio":2200' "$RESPUESTA"; then
+    echo "ERROR: El precio no se actualizo correctamente"
+    exit 1
+fi
+
+if ! grep -q '"Tapas":3' "$RESPUESTA"; then
+    echo "ERROR: Las tapas no se actualizaron correctamente"
+    exit 1
+fi
+
+echo "OK: Datos actualizados correctamente"
+
 # 6. Eliminar alfajor
 verificar 204 "DELETE eliminar alfajor" \
     -X DELETE "$BASE_URL/alfajores/guaymallen-blanco"
