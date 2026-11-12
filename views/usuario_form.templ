@@ -1,0 +1,9 @@
+package views
+
+templ UsuarioForm() {
+	<form id="form-usuario" class="formulario" method="POST" action="/usuarios">
+		<label>Nombre<input type="text" name="name" required/></label>
+		<label>Email<input type="email" name="email" required/></label>
+		<button type="submit" class="boton">Crear usuario</button>
+	</form>
+}

@@ -1,0 +1,52 @@
+package views
+
+import (
+	db "alfajorboxd/db/sqlc"
+	"database/sql"
+	"math"
+	"strings"
+)
+
+//la calificacion va del 1 al 10, cada punto es media estrella
+func estrellas(calificacion int32) string {
+	texto := strings.Repeat("★", int(calificacion/2))
+	if calificacion%2 == 1 {
+		texto += "½"
+	}
+	return texto
+}
+
+//el promedio ya viene en estrellas, se redondea a la media estrella mas cercana
+func estrellasPromedio(promedio float64) string {
+	return estrellas(int32(math.Round(promedio * 2)))
+}
+
+templ Poster(nombre string, imagen sql.NullString) {
+	if imagen.Valid {
+		<div class="poster poster-imagen">
+			<img src={ "/static/img/" + imagen.String } alt={ nombre }/>
+		</div>
+	} else {
+		<div class="poster poster-vacio">{ nombre }</div>
+	}
+}
+
+templ AlfajorList(alfajores []db.ListAlfajoresPopularesRow) {
+	<div id="lista-alfajores" class="grilla-posters">
+		if len(alfajores) == 0 {
+			<p class="vacio">Todavía no hay alfajores cargados.</p>
+		}
+		for _, a := range alfajores {
+			<a href={ "/alfajores/" + a.ID } class="tarjeta">
+				@Poster(a.Name, a.Imagen)
+				<span class="tarjeta-nombre">{ a.Name }</span>
+				<span class="tarjeta-marca">{ a.Marca }</span>
+				if a.Cantidad > 0 {
+					<span class="estrellas">{ estrellasPromedio(a.Promedio) }</span>
+				} else {
+					<span class="sin-reviews">Sin reviews</span>
+				}
+			</a>
+		}
+	</div>
+}

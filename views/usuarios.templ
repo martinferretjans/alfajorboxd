@@ -1,0 +1,22 @@
+package views
+
+import db "alfajorboxd/db/sqlc"
+
+templ UsuariosPage(tema string, usuarios []db.Usuario) {
+	@Layout("Usuarios", tema, usuariosContenido(usuarios))
+}
+
+templ usuariosContenido(usuarios []db.Usuario) {
+	<section class="seccion">
+		<div class="seccion-titulo">
+			<h2>Miembros</h2>
+		</div>
+		@UsuarioList(usuarios)
+	</section>
+	<section class="seccion">
+		<div class="seccion-titulo">
+			<h2>Crear usuario</h2>
+		</div>
+		@UsuarioForm()
+	</section>
+}

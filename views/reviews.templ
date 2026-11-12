@@ -1,0 +1,16 @@
+package views
+
+import db "alfajorboxd/db/sqlc"
+
+templ ReviewsPage(tema string, reviews []db.ListUltimasReviewsRow) {
+	@Layout("Reviews", tema, reviewsContenido(reviews))
+}
+
+templ reviewsContenido(reviews []db.ListUltimasReviewsRow) {
+	<section class="seccion">
+		<div class="seccion-titulo">
+			<h2>Todas las reviews</h2>
+		</div>
+		@ReviewList(reviews)
+	</section>
+}

@@ -6,7 +6,8 @@ CREATE TABLE alfajor(
 	precio INT NOT NULL,
 	tapas INT NOT NULL CHECK(tapas IN (2,3)),
 	marca VARCHAR(255) NOT NULL,
-	descripcion TEXT
+	descripcion TEXT,
+	imagen VARCHAR(255)
 );
 
 CREATE TABLE usuario(
@@ -17,11 +18,11 @@ CREATE TABLE usuario(
 
 
 CREATE TABLE review(
-	id_alfajor VARCHAR(255) REFERENCES alfajor(id) ON DELETE CASCADE,
-	id_user INT REFERENCES usuario(id) ON DELETE CASCADE,
-	calificacion DECIMAL(4,2) CHECK (calificacion <= 10.00),
+	id_alfajor VARCHAR(255) NOT NULL REFERENCES alfajor(id) ON DELETE CASCADE,
+	id_user INT NOT NULL REFERENCES usuario(id) ON DELETE CASCADE,
+	calificacion INT NOT NULL CHECK (calificacion BETWEEN 1 AND 10),
 	comentario TEXT,
-	fecha DATE DEFAULT CURRENT_DATE,
+	fecha DATE NOT NULL DEFAULT CURRENT_DATE,
 	PRIMARY KEY (id_alfajor, id_user)
 );
 

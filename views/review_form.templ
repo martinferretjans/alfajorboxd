@@ -1,0 +1,34 @@
+package views
+
+import (
+	db "alfajorboxd/db/sqlc"
+	"fmt"
+)
+
+templ ReviewForm(idAlfajor string, usuarios []db.Usuario) {
+	if len(usuarios) == 0 {
+		<p class="vacio">Para dejar una review primero <a href="/usuarios">creá un usuario</a>.</p>
+	} else {
+		<form id="form-review" class="formulario" method="POST" action="/reviews">
+			<input type="hidden" name="id_alfajor" value={ idAlfajor }/>
+			<label>
+				Usuario
+				<select name="id_user">
+					for _, u := range usuarios {
+						<option value={ fmt.Sprint(u.ID) }>{ u.Name }</option>
+					}
+				</select>
+			</label>
+			<label>
+				Calificación
+				<select name="calificacion">
+					for i := 10; i >= 1; i-- {
+						<option value={ fmt.Sprint(i) }>{ estrellas(int32(i)) }</option>
+					}
+				</select>
+			</label>
+			<label class="campo-ancho">Comentario<textarea name="comentario" rows="3"></textarea></label>
+			<button type="submit" class="boton">Publicar review</button>
+		</form>
+	}
+}

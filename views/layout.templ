@@ -1,0 +1,41 @@
+package views
+
+templ Layout(titulo string, tema string, contenido templ.Component) {
+	<!DOCTYPE html>
+	<html lang="es">
+		<head>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<title>{ titulo } - Alfajorboxd</title>
+			<link rel="stylesheet" href="/static/css/styles.css"/>
+			<link rel="stylesheet" href={ "/static/css/" + tema + ".css" }/>
+		</head>
+		<body>
+			<div class="pagina">
+				<header class="cabecera">
+					<div class="cabecera-contenido">
+						<a href="/" class="logo">Alfajor<span>boxd</span></a>
+						<nav class="menu">
+							<a href="/">Alfajores</a>
+							<a href="/reviews">Reviews</a>
+							<a href="/usuarios">Usuarios</a>
+							<form method="POST" action="/tema">
+								if tema == "marron" {
+									<input type="hidden" name="tema" value="havanna"/>
+								} else {
+									<input type="hidden" name="tema" value="marron"/>
+								}
+								<button type="submit" class="boton-tema">Cambiar tema</button>
+							</form>
+							<a href="/#cargar" class="boton">+ Cargar</a>
+						</nav>
+					</div>
+				</header>
+				<main class="contenido">
+					@contenido
+				</main>
+				<footer class="pie">Alfajorboxd - Programación Web</footer>
+			</div>
+		</body>
+	</html>
+}

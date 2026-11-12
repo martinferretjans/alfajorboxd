@@ -1,49 +1,37 @@
 # Alfajorboxd
 
-Aplicación web para registrar y calificar alfajores.
+Aplicación web para registrar y calificar alfajores, inspirada en Letterboxd y Backloggd. Los usuarios pueden cargar alfajores, dejar reviews calificándolos de media estrella a 5 estrellas y ver el promedio de cada uno.
 
 ## Requisitos
 
 - Make
 - Docker Compose
-- curl
-- bash
-- Git
 
 ## Cómo ejecutar
 
 ```bash
-git clone -b tp3 https://github.com/martinferretjans/alfajorboxd.git
+git clone -b tp5 https://github.com/martinferretjans/alfajorboxd.git
 cd alfajorboxd
+make run-app
 ```
 
-Para ejecutar automáticamente las pruebas de la API:
+La aplicación queda disponible en `http://localhost:8080`. Al cortar la ejecución con `Ctrl+C` se eliminan los contenedores y volúmenes.
+
+Para correr las pruebas de la base de datos:
 
 ```bash
-make test-api
+make test
 ```
 
-Este comando realiza las tareas de preparación, ejecución y limpieza necesarias sin requerir intervención manual.
-
-Para levantar la aplicación y utilizar la API:
+Con la aplicación levantada, `request.sh` prueba todas las rutas y verifica tanto el código HTTP como los datos devueltos:
 
 ```bash
-make run
-```
-
-El servidor HTTP queda disponible en:
-
-`http://localhost:8080`
-
-Para detener los servicios:
-
-```bash
-make stop
+./request.sh
 ```
 
 # Documentación
 
-La tabla principal del proyecto es `alfajor`, la cual guarda los datos de cada alfajor en la plataforma. Estuvimos trabajando también en las tablas `usuario` y `review`, que formarán parte de futuras entregas.
+La base de datos tiene tres tablas: `alfajor`, `usuario` y `review`. Al crearse la base se cargan datos de ejemplo desde `db/schema/seed.sql`.
 
 ### Tabla `alfajor`
 
@@ -57,95 +45,89 @@ La tabla principal del proyecto es `alfajor`, la cual guarda los datos de cada a
 | `tapas`       | `INT`          | `NOT NULL`, `CHECK (2 o 3)`      | Cantidad de tapas.                  |
 | `marca`       | `VARCHAR(255)` | `NOT NULL`                       | Marca del fabricante.               |
 | `descripcion` | `TEXT`         | Opcional                         | Descripción adicional del alfajor.  |
+| `imagen`      | `VARCHAR(255)` | Opcional                         | Nombre del archivo en `static/img/`.|
 
-### Endpoints disponibles
+### Tabla `usuario`
 
-| Método | Endpoint | Descripción | Respuesta exitosa |
-|---|---|---|---|
-| GET | `/alfajores` | Obtener todos los alfajores. | 200 OK |
-| GET | `/alfajores/{id}` | Obtener un alfajor por ID. | 200 OK |
-| POST | `/alfajores` | Crear un nuevo alfajor. | 201 Created |
-| PUT | `/alfajores/{id}` | Actualizar un alfajor existente. | 200 OK |
-| DELETE | `/alfajores/{id}` | Eliminar un alfajor. | 204 No Content |
+| Campo   | Tipo SQL       | Restricciones        | Descripción                    |
+|---------|----------------|----------------------|--------------------------------|
+| `id`    | `SERIAL`       | `PRIMARY KEY`        | Identificador del usuario.     |
+| `name`  | `VARCHAR(255)` | `NOT NULL`           | Nombre del usuario.            |
+| `email` | `VARCHAR(255)` | `UNIQUE`, `NOT NULL` | Email del usuario.             |
 
-Los endpoints devuelven los resultados en formato JSON, excepto DELETE, que responde sin contenido al eliminar correctamente.
+### Tabla `review`
 
-### Validaciones
+| Campo          | Tipo SQL       | Restricciones                                | Descripción                                   |
+|----------------|----------------|----------------------------------------------|-----------------------------------------------|
+| `id_alfajor`   | `VARCHAR(255)` | `PRIMARY KEY`, `REFERENCES alfajor(id)`      | Alfajor reseñado.                             |
+| `id_user`      | `INT`          | `PRIMARY KEY`, `REFERENCES usuario(id)`      | Usuario que escribió la review.               |
+| `calificacion` | `INT`          | `NOT NULL`, `CHECK (entre 1 y 10)`           | Cada punto equivale a media estrella.         |
+| `comentario`   | `TEXT`         | Opcional                                     | Texto de la review.                           |
+| `fecha`        | `DATE`         | `NOT NULL`, por defecto la fecha actual      | Fecha de la review.                           |
 
-Antes de crear o actualizar un alfajor, se comprueba que:
+Un usuario puede hacer una sola review por alfajor. Si se borra un alfajor o un usuario, se borran sus reviews (`ON DELETE CASCADE`).
 
-- El nombre, el relleno y la marca no estén vacíos.
-- El precio sea mayor que cero.
-- La cantidad de tapas sea 2 o 3.
-- En la creación, el ID no esté vacío.
+La calificación de un alfajor es el promedio de sus reviews pasado a estrellas (por ejemplo, reviews de 10, 9 y 9 dan 4.67 estrellas). Se calcula en las consultas `GetPromedioAlfajor` y `ListAlfajoresPopulares`.
 
-Si los datos recibidos son inválidos, se devuelve `400 Bad Request`.
+# Vistas
 
-Cuando se intenta consultar, actualizar o eliminar un alfajor inexistente, se devuelve `404 Not Found`.
+Las páginas se renderizan en el servidor con `templ` (directorio `views`). Los formularios usan el patrón Post/Redirect/Get: hacen un POST y el servidor redirige a la página que corresponde.
 
-Los campos `cobertura` y `descripcion` son opcionales. Si se reciben vacíos, contienen solamente espacios o se omiten, se almacenan como `NULL` en PostgreSQL.
+| Ruta                  | Método | Descripción                                                        |
+|-----------------------|--------|--------------------------------------------------------------------|
+| `/`                   | GET    | Alfajores populares, reviews recientes y formulario de carga.      |
+| `/alfajores`          | POST   | Crea un alfajor y redirige a `/`.                                  |
+| `/alfajores/{id}`     | GET    | Detalle del alfajor, su promedio, sus reviews y el formulario de review. |
+| `/reviews`            | GET    | Listado de las últimas reviews.                                    |
+| `/reviews`            | POST   | Crea una review y redirige al detalle del alfajor.                 |
+| `/usuarios`           | GET    | Listado de usuarios y formulario de alta.                          |
+| `/usuarios`           | POST   | Crea un usuario y redirige a `/usuarios`.                          |
+| `/tema`               | POST   | Cambia el tema de colores y vuelve a la página anterior.           |
+| `/static/...`         | GET    | Archivos estáticos (CSS e imágenes).                               |
 
-### Ejemplos de peticiones
+### Componentes
 
-**Listar todos los alfajores:**
+- `layout.templ`: estructura base de todas las páginas (head, cabecera con navegación y pie). Recibe el contenido como `templ.Component`.
+- `alfajor_list.templ` y `alfajor_form.templ`: grilla de alfajores y formulario de carga.
+- `review_list.templ` y `review_form.templ`: listado y formulario de reviews.
+- `usuario_list.templ` y `usuario_form.templ`: tabla y formulario de usuarios.
+- `index.templ`, `alfajor.templ`, `reviews.templ` y `usuarios.templ`: páginas completas que usan el layout.
 
-```bash
-curl -i http://localhost:8080/alfajores
-```
+### Temas de colores
 
-**Obtener un alfajor por ID:**
+Hay dos temas: uno claro inspirado en el envoltorio del Havanna de chocolate (dorado `#d8c28a` con marrón `#514227`), que es el tema por defecto, y uno oscuro marrón (`#60341f` con `#fbd705`). La estructura de la página está en `static/css/styles.css` y los colores de cada tema en `static/css/havanna.css` y `static/css/marron.css`. El botón "Cambiar tema" guarda el tema elegido en una cookie y el layout carga la hoja de estilos que corresponde.
 
-```bash
-curl -i http://localhost:8080/alfajores/guaymallen-blanco
-```
+### Imágenes
 
-**Crear un alfajor:**
+Las imágenes de los alfajores van en `static/img/`, y en el campo `imagen` se guarda solo el nombre del archivo (por ejemplo `havanna-chocolate.webp`). Los pósters son cuadrados con fondo blanco y la imagen se muestra centrada sin deformarse, por lo que sirven fotos de cualquier proporción. Si un alfajor no tiene imagen, se muestra un póster con su nombre.
 
-```bash
-curl -i -X POST http://localhost:8080/alfajores \
-  -H "Content-Type: application/json" \
-  -d '{
-    "id": "guaymallen-blanco",
-    "name": "Guaymallen Blanco",
-    "relleno": "Dulce de leche",
-    "cobertura": "Chocolate blanco",
-    "precio": 1800,
-    "tapas": 2,
-    "marca": "Guaymallen",
-    "descripcion": "Alfajor simple blanco"
-  }'
-```
+Las imágenes de los alfajores de ejemplo fueron obtenidas de [alfajor.com.ar](https://alfajor.com.ar/ranking).
 
-**Actualizar un alfajor:**
+# Ejecución
 
-```bash
-curl -i -X PUT http://localhost:8080/alfajores/guaymallen-blanco \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "Guaymallen Triple Blanco",
-    "relleno": "Dulce de leche",
-    "cobertura": "Chocolate blanco",
-    "precio": 2200,
-    "tapas": 3,
-    "marca": "Guaymallen"
-  }'
-```
+La ejecución del proyecto está automatizada mediante el Makefile.
 
-**Eliminar un alfajor:**
-
-```bash
-curl -i -X DELETE http://localhost:8080/alfajores/guaymallen-blanco
-```
-
-## Organización de los contenedores
+### Organización de los contenedores
 
 Docker Compose define tres servicios:
 
-- **`db`**: ejecuta PostgreSQL 16 y contiene la base de datos `alfajorboxd`.
-- **`test`**: contiene Go, `sqlc`, las dependencias y el código fuente. Se utiliza para generar código, compilar y ejecutar los tests de Go.
-- **`app`**: ejecuta el servidor HTTP de la aplicación, conectado a PostgreSQL, exponiendo el puerto 8080.
+- **`db`**: ejecuta PostgreSQL 16 y contiene la base de datos `alfajorboxd`. Al iniciarse ejecuta `schema.sql` y `seed.sql`.
+- **`test`**: contiene Go, `sqlc`, `templ`, las dependencias y el código fuente del proyecto. Se utiliza para generar el código, compilar la aplicación y ejecutar las pruebas.
+- **`app`**: usa la misma imagen que `test` y ejecuta el servidor web en el puerto 8080.
 
-### Pruebas de capa de datos
+### Flujo de ejecución
+
+Al ejecutar `make run-app`, se realizan automáticamente los siguientes pasos:
+
+1. Se eliminan los contenedores y volúmenes de ejecuciones anteriores.
+2. Se construye la imagen del servicio `app` utilizando el `Dockerfile`.
+3. Se inicia el contenedor de PostgreSQL y se espera hasta que la base de datos esté lista.
+4. Se crea un contenedor para ejecutar:
+   - `sqlc generate`, que genera el código Go a partir de las consultas SQL.
+   - `templ generate`, que genera el código Go a partir de las vistas `.templ`.
+   - `go build`, que compila la aplicación.
+   - La aplicación compilada, que queda escuchando en el puerto 8080.
+5. Al finalizar (`Ctrl+C`), se eliminan los contenedores y los volúmenes creados durante la ejecución.
 
 Al ejecutar `make test`, se realizan automáticamente los siguientes pasos:
 
@@ -155,54 +137,7 @@ Al ejecutar `make test`, se realizan automáticamente los siguientes pasos:
 4. Se espera hasta que la base de datos esté lista.
 5. Se crea un contenedor para ejecutar:
    - `sqlc generate`, que genera el código Go a partir de las consultas SQL.
+   - `templ generate`, que genera el código Go a partir de las vistas `.templ`.
    - `go build ./...`, que comprueba que todos los paquetes del proyecto compilen.
-   - `go test ./... -v`, que ejecuta todas las pruebas.
+   - `go test ./... -v`, que ejecuta las pruebas de las tres tablas.
 6. Al finalizar, se eliminan los contenedores y los volúmenes creados durante la ejecución.
-
-### Pruebas de la API REST
-
-Para ejecutar las pruebas del TP3:
-
-```bash
-make test-api
-```
-
-Este comando automatiza el proceso completo:
-
-1. Elimina los contenedores y volúmenes anteriores del entorno de pruebas de la API.
-2. Construye la imagen de la aplicación.
-3. Inicia PostgreSQL y espera a que se encuentre disponible.
-4. Genera el código de `sqlc` e inicia el servidor HTTP con Go.
-5. Espera hasta que la API responda a las peticiones HTTP.
-6. Ejecuta `request.sh`, que realiza las pruebas de los endpoints.
-7. Al finalizar, elimina los contenedores y volúmenes utilizados, incluso si alguna prueba falla.
-
-Para estas pruebas se utiliza un proyecto independiente de Docker Compose, llamado `alfajorboxd-test-api`, con el objetivo de aislar sus contenedores y volúmenes de los utilizados en la ejecución normal.
-
-El puerto 8080 debe estar disponible antes de ejecutar `make test-api`.
-
-### Archivo `request.sh`
-
-El script utiliza `curl` para enviar peticiones HTTP y comprobar los códigos de respuesta.
-
-Se realizan las siguientes pruebas:
-
-| Prueba | Código esperado |
-|---|---|
-| Crear un alfajor válido (POST) | 201 |
-| Crear un alfajor con datos inválidos (POST) | 400 |
-| Listar todos los alfajores (GET) | 200 |
-| Obtener el alfajor creado (GET) | 200 |
-| Actualizar el alfajor (PUT) | 200 |
-| Eliminar el alfajor (DELETE) | 204 |
-| Intentar obtener el alfajor eliminado (GET) | 404 |
-
-## Comandos disponibles
-
-| Comando | Descripción |
-|---|---|
-| `make run` | Levanta la aplicación y PostgreSQL. |
-| `make test` | Ejecuta los tests de Go y de la capa de datos. |
-| `make test-api` | Ejecuta las pruebas automatizadas de la API REST. |
-| `make stop` | Detiene y elimina los contenedores de la ejecución normal, conservando los volúmenes. |
-| `make clean` | Elimina los contenedores y volúmenes de la ejecución normal. |

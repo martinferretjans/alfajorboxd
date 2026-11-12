@@ -1,0 +1,22 @@
+package views
+
+templ AlfajorForm() {
+	<form id="form-alfajor" class="formulario" method="POST" action="/alfajores">
+		<label>Identificador<input type="text" name="id" placeholder="havanna-chocolate" required/></label>
+		<label>Nombre<input type="text" name="name" required/></label>
+		<label>Marca<input type="text" name="marca" required/></label>
+		<label>Relleno<input type="text" name="relleno" required/></label>
+		<label>Cobertura<input type="text" name="cobertura"/></label>
+		<label>Precio<input type="number" name="precio" min="1" required/></label>
+		<label>
+			Tapas
+			<select name="tapas">
+				<option value="2">2</option>
+				<option value="3">3</option>
+			</select>
+		</label>
+		<label>Imagen<input type="text" name="imagen" placeholder="havanna-chocolate.webp"/></label>
+		<label class="campo-ancho">Descripción<textarea name="descripcion" rows="3"></textarea></label>
+		<button type="submit" class="boton">Guardar alfajor</button>
+	</form>
+}

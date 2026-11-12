@@ -1,0 +1,330 @@
+* {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+	font-family: Arial, sans-serif;
+}
+
+a {
+	text-decoration: none;
+}
+
+.pagina {
+	display: grid;
+	grid-template-rows: auto 1fr auto;
+	grid-template-areas:
+		"header"
+		"main"
+		"footer";
+	min-height: 100vh;
+}
+
+.cabecera {
+	grid-area: header;
+}
+
+.cabecera-contenido {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	max-width: 960px;
+	margin: 0 auto;
+	padding: 12px 20px;
+}
+
+.logo {
+	font-size: 28px;
+	font-weight: bold;
+}
+
+.menu {
+	display: flex;
+	align-items: center;
+	gap: 18px;
+}
+
+.menu a {
+	font-size: 13px;
+	font-weight: bold;
+	text-transform: uppercase;
+}
+
+.menu form {
+	margin: 0;
+}
+
+.contenido {
+	grid-area: main;
+	width: 100%;
+	max-width: 960px;
+	margin: 0 auto;
+	padding: 20px;
+}
+
+.pie {
+	grid-area: footer;
+	text-align: center;
+	padding: 20px;
+	font-size: 13px;
+}
+
+.boton, .boton-tema {
+	padding: 8px 14px;
+	border: none;
+	border-radius: 4px;
+	font-size: 13px;
+	font-weight: bold;
+	font-family: Arial, sans-serif;
+	cursor: pointer;
+}
+
+.bienvenida {
+	text-align: center;
+	padding: 20px 0;
+}
+
+.bienvenida h1 {
+	font-size: 26px;
+	font-weight: normal;
+}
+
+.seccion {
+	margin-bottom: 40px;
+}
+
+.seccion-titulo {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-end;
+	border-bottom: 1px solid;
+	margin-bottom: 15px;
+}
+
+.seccion-titulo h2 {
+	margin: 0 0 6px 0;
+	font-size: 13px;
+	font-weight: normal;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+}
+
+.seccion-titulo a {
+	margin-bottom: 6px;
+	font-size: 12px;
+	text-transform: uppercase;
+}
+
+.grilla-posters {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, 140px);
+	justify-content: space-between;
+	gap: 16px;
+}
+
+.tarjeta {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.poster {
+	width: 140px;
+	height: 140px;
+	border: 1px solid;
+	border-radius: 4px;
+	background-color: #ffffff;
+}
+
+.poster-vacio {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 10px;
+	text-align: center;
+	font-weight: bold;
+}
+
+.poster-imagen {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 8px;
+}
+
+.poster-imagen img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+.tarjeta-nombre, .review-usuario {
+	font-weight: bold;
+}
+
+.tarjeta-nombre {
+	font-size: 14px;
+}
+
+.tarjeta-marca, .sin-reviews, .review-fecha {
+	font-size: 12px;
+}
+
+.estrellas {
+	font-size: 14px;
+	letter-spacing: 1px;
+}
+
+.grilla-reviews {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+	gap: 20px;
+}
+
+.review {
+	display: flex;
+	gap: 15px;
+	padding-bottom: 15px;
+	margin-bottom: 15px;
+	border-bottom: 1px solid;
+}
+
+.review-poster {
+	flex: 0 0 70px;
+}
+
+.review-poster .poster {
+	width: 70px;
+	height: 70px;
+	padding: 4px;
+	font-size: 10px;
+}
+
+.review-cuerpo {
+	flex: 1;
+}
+
+.review-cabecera {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 10px;
+}
+
+.review-alfajor {
+	margin: 2px 0;
+	font-size: 13px;
+}
+
+.review-comentario {
+	margin: 6px 0 0 0;
+	font-size: 14px;
+	line-height: 1.5;
+}
+
+.detalle {
+	display: grid;
+	grid-template-columns: 220px 1fr 160px;
+	gap: 30px;
+	margin-bottom: 40px;
+}
+
+.detalle-poster .poster {
+	width: 220px;
+	height: 220px;
+	font-size: 20px;
+}
+
+.detalle-info h1 {
+	margin: 0;
+	font-size: 32px;
+}
+
+.detalle-datos, .tabla {
+	border-collapse: collapse;
+}
+
+.tabla {
+	width: 100%;
+}
+
+.detalle-datos th, .detalle-datos td, .tabla th, .tabla td {
+	padding: 8px 12px 8px 0;
+	border-bottom: 1px solid;
+	text-align: left;
+}
+
+.detalle-puntaje {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 6px;
+	align-self: flex-start;
+	padding: 15px;
+	border-radius: 6px;
+}
+
+.puntaje-titulo {
+	font-size: 12px;
+	text-transform: uppercase;
+}
+
+.puntaje-numero {
+	font-size: 40px;
+	font-weight: bold;
+}
+
+.formulario {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 15px;
+	padding: 20px;
+	border-radius: 6px;
+}
+
+.formulario label {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	font-size: 13px;
+}
+
+.formulario input, .formulario select, .formulario textarea {
+	padding: 8px;
+	border: 1px solid;
+	border-radius: 4px;
+	font-size: 14px;
+	font-family: Arial, sans-serif;
+}
+
+.campo-ancho, .formulario .boton {
+	grid-column: 1 / 3;
+}
+
+.formulario .boton {
+	justify-self: start;
+}
+
+.vacio {
+	font-style: italic;
+}
+
+@media (max-width: 700px) {
+	.cabecera-contenido {
+		flex-direction: column;
+		gap: 10px;
+	}
+
+	.menu {
+		flex-wrap: wrap;
+		justify-content: center;
+	}
+
+	.detalle, .formulario, .grilla-reviews {
+		grid-template-columns: 1fr;
+	}
+
+	.campo-ancho, .formulario .boton {
+		grid-column: 1;
+	}
+}

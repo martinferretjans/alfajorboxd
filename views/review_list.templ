@@ -1,0 +1,29 @@
+package views
+
+import db "alfajorboxd/db/sqlc"
+
+templ ReviewList(reviews []db.ListUltimasReviewsRow) {
+	<div id="lista-reviews" class="grilla-reviews">
+		if len(reviews) == 0 {
+			<p class="vacio">Todavía no hay reviews.</p>
+		}
+		for _, r := range reviews {
+			<article class="review">
+				<a href={ "/alfajores/" + r.IDAlfajor } class="review-poster">
+					@Poster(r.Alfajor, r.Imagen)
+				</a>
+				<div class="review-cuerpo">
+					<div class="review-cabecera">
+						<span class="review-usuario">{ r.Usuario }</span>
+						<span class="review-fecha">{ r.Fecha.Format("02/01/2006") }</span>
+					</div>
+					<p class="review-alfajor">reseñó <a href={ "/alfajores/" + r.IDAlfajor }>{ r.Alfajor }</a></p>
+					<span class="estrellas">{ estrellas(r.Calificacion) }</span>
+					if r.Comentario.Valid {
+						<p class="review-comentario">{ r.Comentario.String }</p>
+					}
+				</div>
+			</article>
+		}
+	</div>
+}

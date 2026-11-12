@@ -1,0 +1,26 @@
+package views
+
+import (
+	db "alfajorboxd/db/sqlc"
+	"fmt"
+)
+
+templ UsuarioList(usuarios []db.Usuario) {
+	<table id="lista-usuarios" class="tabla">
+		<thead>
+			<tr><th>ID</th><th>Nombre</th><th>Email</th></tr>
+		</thead>
+		<tbody>
+			for _, u := range usuarios {
+				<tr>
+					<td>{ fmt.Sprint(u.ID) }</td>
+					<td>{ u.Name }</td>
+					<td>{ u.Email }</td>
+				</tr>
+			}
+			if len(usuarios) == 0 {
+				<tr><td colspan="3">Todavía no hay usuarios.</td></tr>
+			}
+		</tbody>
+	</table>
+}

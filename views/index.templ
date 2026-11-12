@@ -1,0 +1,33 @@
+package views
+
+import db "alfajorboxd/db/sqlc"
+
+templ IndexPage(tema string, alfajores []db.ListAlfajoresPopularesRow, reviews []db.ListUltimasReviewsRow) {
+	@Layout("Inicio", tema, indexContenido(alfajores, reviews))
+}
+
+templ indexContenido(alfajores []db.ListAlfajoresPopularesRow, reviews []db.ListUltimasReviewsRow) {
+	<section class="bienvenida">
+		<h1>Bienvenido a <span>Alfajorboxd</span>. Esto es lo que estuvimos probando...</h1>
+		<p>Registrá los alfajores que probaste, calificalos y descubrí los favoritos de la comunidad.</p>
+	</section>
+	<section class="seccion">
+		<div class="seccion-titulo">
+			<h2>Populares en Alfajorboxd</h2>
+		</div>
+		@AlfajorList(alfajores)
+	</section>
+	<section class="seccion">
+		<div class="seccion-titulo">
+			<h2>Reviews recientes</h2>
+			<a href="/reviews">Ver más</a>
+		</div>
+		@ReviewList(reviews)
+	</section>
+	<section id="cargar" class="seccion">
+		<div class="seccion-titulo">
+			<h2>Cargar un alfajor</h2>
+		</div>
+		@AlfajorForm()
+	</section>
+}

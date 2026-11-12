@@ -38,12 +38,16 @@ func main(){
 
 	//Server http
 	
+	http.HandleFunc("/", h.IndexHandler)
 	http.HandleFunc("/alfajores", h.AlfajoresHandler)
 	http.HandleFunc("/alfajores/", h.AlfajorHandler)
+	http.HandleFunc("/usuarios", h.UsuariosHandler)
+	http.HandleFunc("/reviews", h.ReviewsHandler)
+	http.HandleFunc("/tema", h.TemaHandler)
 	
 	staticDir := "./static"
 	fileServer := http.FileServer(http.Dir(staticDir))
-	http.Handle("/", fileServer)
+	http.Handle("/static/", http.StripPrefix("/static/", fileServer))
 	
 	port := ":8080"
 	fmt.Printf("Server escuchando en %s\n", port)

@@ -36,7 +36,7 @@ services:
       DATABASE_URL: postgres://postgres:postgres@db:5432/alfajorboxd?sslmode=disable
     ports:
       - "8080:8080"
-    command: sh -c "sqlc generate && go run ."
+    command: sh -c "sqlc generate && templ generate && go build -o alfajorboxd . && ./alfajorboxd"
 
 volumes:
   postgres_data:

@@ -1,0 +1,60 @@
+body {
+	background-color: #1c110b;
+	color: #f3e9df;
+}
+
+a, .bienvenida span, .estrellas, .puntaje-numero, .logo span, .tabla th {
+	color: #fbd705;
+}
+
+.cabecera {
+	background-color: #60341f;
+}
+
+.logo, .menu a {
+	color: #ffffff;
+}
+
+.tarjeta-nombre, .review-usuario {
+	color: #f3e9df;
+}
+
+.boton, .menu .boton {
+	background-color: #fbd705;
+	color: #1c110b;
+}
+
+.boton-tema {
+	background-color: #1c110b;
+	color: #fbd705;
+}
+
+.bienvenida p, .seccion-titulo h2, .tarjeta-marca, .sin-reviews, .review-fecha, .review-alfajor, .detalle-marca, .puntaje-titulo, .puntaje-cantidad, .vacio, .pie {
+	color: #c9b29f;
+}
+
+.seccion-titulo, .review, .poster, .detalle-datos th, .detalle-datos td, .tabla th, .tabla td {
+	border-color: #60341f;
+}
+
+.tarjeta:hover .poster, .review-poster:hover .poster {
+	border-color: #fbd705;
+}
+
+.formulario, .detalle-puntaje {
+	background-color: #2c1b12;
+}
+
+.poster-vacio {
+	color: #60341f;
+}
+
+.formulario input, .formulario select, .formulario textarea {
+	background-color: #1c110b;
+	color: #f3e9df;
+	border-color: #60341f;
+}
+
+.pie {
+	background-color: #140b06;
+}
